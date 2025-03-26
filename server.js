@@ -2,7 +2,6 @@
 const { createServer } = require('http');
 const { parse } = require('url');
 const next = require('next');
-const { initializeWebSockets } = require('./dist/lib/websocket/init');
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -13,9 +12,6 @@ app.prepare().then(() => {
     const parsedUrl = parse(req.url, true);
     handle(req, res, parsedUrl);
   });
-  
-  // Initialize WebSockets
-  initializeWebSockets(server);
   
   server.listen(3000, (err) => {
     if (err) throw err;

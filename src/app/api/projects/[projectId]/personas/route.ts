@@ -1,6 +1,7 @@
 // src/app/api/projects/[projectId]/personas/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { personaService } from '@/lib/services/personaService';
+import { prisma } from '@/lib/db/prisma';
 
 export async function GET(
   request: NextRequest,
