@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_TYPE=postgres
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=annotation_user
+      - POSTGRES_PASSWORD=annotation_password
+      - POSTGRES_DB=annotation_platform
+      - DATABASE_URL=postgresql://annotation_user:annotation_password@postgres:5432/annotation_platform?schema=public
+      - OLLAMA_URL=http://ollama:11434
+      - OLLAMA_DEFAULT_MODEL=llama2
+      - NEXT_PUBLIC_OLLAMA_BASE_URL=http://localhost:11434
+      - NEXT_PUBLIC_OLLAMA_DEFAULT_MODEL=llama2
+      - CHROMADB_DIR=/app/chroma_db
+      - PYTHON_PATH=python3
+    volumes:
+      - ./data:/app/data
+      - ./chroma_db:/app/chroma_db
+      - ./.cache:/app/.cache
+    depends_on:
+      - postgres
+      - ollama
+
+  postgres:
+    image: postgres:14
+    environment:
+      - POSTGRES_USER=annotation_user
+      - POSTGRES_PASSWORD=annotation_password
+      - POSTGRES_DB=annotation_platform
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ollama_models:/root/.ollama
+    ports:
+      - "11434:11434"
+
+volumes:
+  postgres_data:
+  ollama_models:
