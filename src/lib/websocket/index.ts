@@ -1,6 +1,6 @@
 // src/lib/websocket/index.ts
-import { Server as HTTPServer } from 'http';
-import { Server as WebSocketServer } from 'ws';
+import { Server as HTTPServer, IncomingMessage } from 'http';
+import { WebSocket, WebSocketServer } from 'ws';
 import { parse } from 'url';
 
 // Define message types
@@ -21,15 +21,20 @@ export interface WebSocketMessage {
   timestamp?: number;
 }
 
+interface Client {
+  ws: WebSocket;
+  joinTime: number;
+}
+
 export class WebSocketService {
   private wss: WebSocketServer | null = null;
-  private clients = new Map<string, any>();
+  private clients = new Map<string, Client>();
   
   initialize(server: HTTPServer) {
     this.wss = new WebSocketServer({ noServer: true });
     
     // Handle WebSocket connections
-    server.on('upgrade', (request, socket, head) => {
+    server.on('upgrade', (request: IncomingMessage, socket: any, head: Buffer) => {
       const { pathname } = parse(request.url || '', true);
       
       if (pathname === '/api/ws') {
@@ -40,7 +45,7 @@ export class WebSocketService {
     });
     
     // Set up connection handler
-    this.wss.on('connection', (ws, request) => {
+    this.wss.on('connection', (ws: WebSocket, request: IncomingMessage) => {
       // Generate client ID
       const clientId = Math.random().toString(36).substring(2, 15);
       
@@ -70,7 +75,7 @@ export class WebSocketService {
       }, clientId);
       
       // Handle incoming messages
-      ws.on('message', (message) => {
+      ws.on('message', (message: Buffer | ArrayBuffer | Buffer[]) => {
         try {
           const parsedMessage = JSON.parse(message.toString()) as WebSocketMessage;
           

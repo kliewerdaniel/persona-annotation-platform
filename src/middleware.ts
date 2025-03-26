@@ -4,8 +4,8 @@ import type { NextRequest } from 'next/server';
 import { authService } from './lib/auth/authService';
 
 export async function middleware(request: NextRequest) {
-  // Skip authentication for public routes
-  const publicPaths = ['/api/auth/login', '/api/auth/register', '/login', '/register'];
+  // Skip authentication for public routes and WebSocket connections
+  const publicPaths = ['/api/auth/login', '/api/auth/register', '/login', '/register', '/api/ws', '/api/websocket'];
   const path = request.nextUrl.pathname;
   
   if (publicPaths.includes(path)) {
@@ -44,6 +44,11 @@ export async function middleware(request: NextRequest) {
         headers: requestHeaders,
       },
     });
+  }
+  
+  // DEVELOPMENT MODE: Skip auth for development
+  if (process.env.NODE_ENV === 'development') {
+    return NextResponse.next();
   }
   
   // For non-API routes, check for token in cookie

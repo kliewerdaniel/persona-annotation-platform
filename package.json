@@ -5,8 +5,10 @@
   "scripts": {
     "setup": "node scripts/setup-local-environment.js",
     "dev": "next dev",
+    "dev:server": "node server.js",
     "build": "next build && tsc --project tsconfig.server.json",
     "start": "next start",
+    "start:server": "node server.js",
     "lint": "next lint"
   },
   "dependencies": {

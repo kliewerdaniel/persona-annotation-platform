@@ -33,8 +33,9 @@ export default function CollaborativeAnnotationPage() {
   const [collaborators, setCollaborators] = useState<Record<string, { name: string; isActive: boolean }>>({});
   const [activities, setActivities] = useState<CollaboratorActivity[]>([]);
   
-  // Setup WebSocket
+  // Setup WebSocket with debugging enabled
   const { isConnected, sendMessage } = useWebSocket({
+    debug: true,
     onMessage: (message) => {
       switch (message.type) {
         case MessageType.ANNOTATION_CREATED:
